@@ -1,21 +1,32 @@
 package br.com.alura.estoque.retrofit;
 
 import br.com.alura.estoque.retrofit.service.ProdutoService;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-
-public class EstoqueRetrofit  {
+public class EstoqueRetrofit {
 
     private final ProdutoService produtoService;
 
     public EstoqueRetrofit() {
-       Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("192.168.64.1 :8080/")
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
                 .build();
-         produtoService = retrofit.create(ProdutoService.class);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.64.1:8080/")
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        produtoService = retrofit.create(ProdutoService.class);
     }
 
-    public ProdutoService getProdutoService(){
+    public ProdutoService getProdutoService() {
         return produtoService;
     }
 
